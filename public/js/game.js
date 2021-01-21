@@ -10,6 +10,7 @@ const winningCombos = [
 	[0, 4, 8],
 	[2, 4, 6],
 ];
+const highlightColor = "#ff0000";
 
 const p1 = "X";
 const p2 = "O";
@@ -57,4 +58,10 @@ function hasWon(player) {
 }
 
 // highlight winning combo
-function highlight(pattern) {}
+function highlight(pattern) {
+	pattern = winningCombos[pattern];
+	for (let i = 0; i < pattern.length; i++) {
+		cells[pattern[i]].style.color = highlightColor;
+		console.log(cells[pattern[i]]);
+	}
+}
