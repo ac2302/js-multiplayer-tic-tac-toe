@@ -5,7 +5,9 @@
 }
 
 #grid-container,
-#opp-info {
+#opp-info,
+#your-move,
+#endgame {
 	display: none;
 }
 

@@ -19,30 +19,35 @@ const winningCombos = [
 ];
 const highlightColor = "#ff0000";
 
-const p1 = "X";
-const p2 = "O";
+let players = [];
 let turn = "";
 
 // click event handler
 for (let i = 0; i < cells.length; i++) {
 	cells[i].addEventListener("click", (e) => {
-		if (e.target.innerText == "" && turn === p1) {
-			e.target.innerText = p1;
+		if (e.target.innerText == "" && turn === players[0]) {
+			e.target.innerText = players[0];
+			// console.log(players[0]);
 			console.log(getWinner());
+			// send move to server
+			socket.emit("moved", e.target.id);
+			// change move
+			move = players[1];
+			document.getElementById("your-move").style.display = "none";
 		}
 	});
 }
 
 // checking for wins
 function getWinner() {
-	const p1Status = hasWon(p1);
-	const p2Status = hasWon(p2);
-	if (p1Status.won) {
+	const p0Status = hasWon(players[0]);
+	const p1Status = hasWon(players[1]);
+	if (p0Status.won) {
+		highlight(p0Status.pattern);
+		return players[0];
+	} else if (p1Status.won) {
 		highlight(p1Status.pattern);
-		return p1;
-	} else if (p2Status.won) {
-		highlight(p2Status.pattern);
-		return p2;
+		return players[1];
 	}
 }
 
@@ -69,7 +74,7 @@ function highlight(pattern) {
 	pattern = winningCombos[pattern];
 	for (let i = 0; i < pattern.length; i++) {
 		cells[pattern[i]].style.color = highlightColor;
-		console.log(cells[pattern[i]]);
+		// console.log(cells[pattern[i]]);
 	}
 }
 
@@ -88,14 +93,31 @@ function setOppNick(nick) {
 // ======================= socket stuff ==========================
 // debug
 socket.on("print", (msg) => {
-	console.log(msg);
+	console.log("debug " + msg);
 });
 
 // introduction
 socket.emit("introduction", nick);
 
 // game starts
-socket.on("join", ({ opp }) => {
+socket.on("join", ({ opp, p1s, p2s }) => {
 	displayTable();
 	setOppNick(opp);
+	players.push(p1s);
+	players.push(p2s);
+	if (p1s == "X") {
+		turn = players[0];
+		document.getElementById("your-move").style.display = "block";
+	} else {
+		turn = players[1];
+		document.getElementById("your-move").style.display = "none";
+	}
+
+	// opponent moves
+	socket.on("move", (move) => {
+		turn = players[0];
+		document.getElementById("your-move").style.display = "block";
+		cells[move].innerText = players[1];
+		console.log(getWinner());
+	});
 });
