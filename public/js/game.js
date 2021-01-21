@@ -132,6 +132,7 @@ socket.on("join", ({ opp, p1s, p2s }) => {
 	setOppNick(opp);
 	players.push(p1s);
 	players.push(p2s);
+	document.getElementById("you-are").innerText = `you are ${players[0]}`;
 	if (p1s == "X") {
 		turn = players[0];
 		document.getElementById("your-move").style.display = "block";
