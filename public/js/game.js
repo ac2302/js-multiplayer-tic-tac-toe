@@ -147,6 +147,11 @@ socket.on("join", ({ opp, p1s, p2s }) => {
 		cells[move].innerText = players[1];
 		handleWins();
 	});
+
+	// opponent abandons
+	socket.on("abandon", (message) => {
+		endgame(message);
+	});
 });
 
 // event handler for play again

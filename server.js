@@ -76,9 +76,9 @@ function startGame(p1, p2) {
 
 	// disconnect
 	s1.on("disconnect", () => {
-		s2.emit("print", `${p1.nick} has left`);
+		s2.emit("abandon", `${p1.nick} has left`);
 	});
 	s2.on("disconnect", () => {
-		s1.emit("print", `${p2.nick} has left`);
+		s1.emit("abandon", `${p2.nick} has left`);
 	});
 }
