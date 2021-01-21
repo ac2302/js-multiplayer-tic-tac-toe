@@ -43,7 +43,15 @@ function handleWins() {
 	const winner = getWinner();
 	if (winner === "nobody") {
 		// check for draw
-		
+		let blanks = 0;
+		for (let i = 0; i < cells.length; i++) {
+			if (cells[i].innerText == "") {
+				blanks++;
+			}
+		}
+		if (blanks === 0) {
+			endgame("draw");
+		}
 	} else {
 		endgame(`you have ${winner === players[0] ? "won" : "lost"}`);
 	}
@@ -139,4 +147,9 @@ socket.on("join", ({ opp, p1s, p2s }) => {
 		cells[move].innerText = players[1];
 		handleWins();
 	});
+});
+
+// event handler for play again
+document.getElementById("play-again").addEventListener("click", () => {
+	location.reload();
 });
