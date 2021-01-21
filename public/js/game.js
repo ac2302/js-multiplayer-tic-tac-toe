@@ -1,3 +1,10 @@
+const socket = io();
+
+// get nick from url
+const { nick } = Qs.parse(location.search, {
+	ignoreQueryPrefix: true,
+});
+
 const cells = document.querySelectorAll(".cell");
 
 const winningCombos = [
@@ -14,12 +21,12 @@ const highlightColor = "#ff0000";
 
 const p1 = "X";
 const p2 = "O";
-let turn = "p1";
+let turn = "";
 
 // click event handler
 for (let i = 0; i < cells.length; i++) {
 	cells[i].addEventListener("click", (e) => {
-		if (e.target.innerText == "" && turn === "p1") {
+		if (e.target.innerText == "" && turn === p1) {
 			e.target.innerText = p1;
 			console.log(getWinner());
 		}
@@ -65,3 +72,30 @@ function highlight(pattern) {
 		console.log(cells[pattern[i]]);
 	}
 }
+
+// display the table on match
+function displayTable() {
+	document.getElementById("grid-container").style.display = "block";
+	document.getElementById("opp-info").style.display = "block";
+	document.getElementById("wait-message").style.display = "none";
+}
+
+// display opponent nickname
+function setOppNick(nick) {
+	document.getElementById("opp-nick").innerText = nick;
+}
+
+// ======================= socket stuff ==========================
+// debug
+socket.on("print", (msg) => {
+	console.log(msg);
+});
+
+// introduction
+socket.emit("introduction", nick);
+
+// game starts
+socket.on("join", ({ opp }) => {
+	displayTable();
+	setOppNick(opp);
+});
