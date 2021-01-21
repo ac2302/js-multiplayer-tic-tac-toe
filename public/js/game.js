@@ -27,8 +27,8 @@ for (let i = 0; i < cells.length; i++) {
 	cells[i].addEventListener("click", (e) => {
 		if (e.target.innerText == "" && turn === players[0]) {
 			e.target.innerText = players[0];
-			// console.log(players[0]);
-			console.log(getWinner());
+			// do win loss stuff
+			handleWins();
 			// send move to server
 			socket.emit("moved", e.target.id);
 			// change move
@@ -38,7 +38,17 @@ for (let i = 0; i < cells.length; i++) {
 	});
 }
 
-// checking for wins
+// handling wins and losses
+function handleWins() {
+	const winner = getWinner();
+	if (winner === "nobody") {
+		// check for draw
+		
+	} else {
+		endgame(`you have ${winner === players[0] ? "won" : "lost"}`);
+	}
+}
+
 function getWinner() {
 	const p0Status = hasWon(players[0]);
 	const p1Status = hasWon(players[1]);
@@ -49,6 +59,7 @@ function getWinner() {
 		highlight(p1Status.pattern);
 		return players[1];
 	}
+	return "nobody";
 }
 
 function hasWon(player) {
@@ -90,6 +101,14 @@ function setOppNick(nick) {
 	document.getElementById("opp-nick").innerText = nick;
 }
 
+// display endgame message
+function endgame(message) {
+	turn = "";
+	document.getElementById("endgame").style.display = "block";
+	document.getElementById("game-result").innerText = message;
+	document.getElementById("your-move").style.display = "none";
+}
+
 // ======================= socket stuff ==========================
 // debug
 socket.on("print", (msg) => {
@@ -118,6 +137,6 @@ socket.on("join", ({ opp, p1s, p2s }) => {
 		turn = players[0];
 		document.getElementById("your-move").style.display = "block";
 		cells[move].innerText = players[1];
-		console.log(getWinner());
+		handleWins();
 	});
 });
